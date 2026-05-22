@@ -1,0 +1,13 @@
+spring:
+  ai:
+    openai:
+      # 👇 替换为你的第三方平台API密钥
+      api-key: xxx
+      # 👇 替换为第三方平台的base_url，必须带/v1
+      base-url: xxx/v1
+      chat:
+        # 👇 替换为第三方平台的模型名
+        model: mimo-v2.5-pro
+
+server:
+  port: 8080
