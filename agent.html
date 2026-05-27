@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 智能体助手</title>
+    <style>
+        body { max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial; }
+        .box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        input, button { padding: 10px; width: 100%; margin: 5px 0; font-size: 16px; box-sizing: border-box; }
+        button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .msg { padding: 10px; margin: 5px 0; border-radius: 6px; }
+        .user { background: #e3f2fd; text-align: right; }
+        .ai { background: #f5f5f5; text-align: left; }
+        
+        /* 加载转圈动画 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading::before {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border: 2px solid #fff;
+            border-top: 2px solid #666;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <h2>🧠 AI 智能体（Agent）</h2>
+
+    <div class="box">
+        <input id="sessionId" value="test1" placeholder="会话ID（用于记忆）">
+        <input id="msg" placeholder="输入问题...">
+        <button id="sendBtn" onclick="send()">发送</button>
+        <button onclick="clearHistory()">清空历史</button>
+    </div>
+
+    <div id="history"></div>
+
+    <script>
+        // 逐字输出函数
+        async function typewriterEffect(element, text, speed = 50) {
+            let index = 0;
+            element.innerText = "AI："; // 先固定前缀
+            while (index < text.length) {
+                element.innerText += text.charAt(index);
+                index++;
+                await new Promise(resolve => setTimeout(resolve, speed));
+            }
+        }
+
+        async function send() {
+            // 获取核心元素
+            const sendBtn = document.getElementById("sendBtn");
+            const sessionIdInput = document.getElementById("sessionId");
+            const msgInput = document.getElementById("msg");
+            
+            // 输入校验
+            const sessionId = sessionIdInput.value.trim();
+            const message = msgInput.value.trim();
+            if (!message) {
+                alert("请输入要提问的内容！");
+                return;
+            }
+
+            // 1. 按钮进入加载状态（禁用+转圈）
+            sendBtn.disabled = true;
+            sendBtn.classList.add("loading");
+            sendBtn.innerText = "正在思考...";
+            
+            // 添加用户消息到历史
+            addMsg("我", message);
+            // 清空输入框
+            msgInput.value = "";
+
+            try {
+                // 2. 调用后端接口
+                const res = await fetch(
+                    `http://localhost:8080/chat?sessionId=${encodeURIComponent(sessionId)}&message=${encodeURIComponent(message)}`
+                );
+                const answer = await res.text();
+
+                // 3. 创建AI消息容器，逐字输出回答
+                const aiMsgDiv = document.createElement("div");
+                aiMsgDiv.className = "msg ai";
+                document.getElementById("history").appendChild(aiMsgDiv);
+                await typewriterEffect(aiMsgDiv, answer);
+
+            } catch (error) {
+                // 异常处理
+                addMsg("AI", "抱歉，服务暂时不可用，请稍后重试！");
+                console.error("请求失败：", error);
+            } finally {
+                // 4. 恢复按钮状态（无论成功/失败都恢复）
+                sendBtn.disabled = false;
+                sendBtn.classList.remove("loading");
+                sendBtn.innerText = "发送";
+            }
+        }
+
+        async function clearHistory() {
+            let sessionId = document.getElementById("sessionId").value.trim();
+            if (!sessionId) {
+                alert("请输入会话ID！");
+                return;
+            }
+            await fetch(`http://localhost:8080/chat/clear?sessionId=${encodeURIComponent(sessionId)}`);
+            document.getElementById("history").innerHTML = "";
+        }
+
+        function addMsg(who, text) {
+            let div = document.createElement("div");
+            div.className = "msg " + (who === "我" ? "user" : "ai");
+            div.innerText = who + "：" + text;
+            document.getElementById("history").appendChild(div);
+        }
+    </script>
+</body>
+</html>
