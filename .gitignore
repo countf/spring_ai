@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# 敏感配置文件
+application-secret.yml
+application-dev.yml
+*.properties
+
+# 密钥文件
+api-key.txt
+secret.key
