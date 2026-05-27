@@ -1,9 +1,5 @@
 # Spring AI 智能体（Agent）项目说明文档
 
-我直接**把你这段文字全部改成标准 GitHub 专业 \[README\.md\]\(README\.md\) 格式**，你**复制粘贴就能用**，不用改任何东西！
-
-# Spring AI 智能体（Agent）项目说明文档
-
 ## 一、项目概述
 
 本项目基于 Spring AI 框架构建，实现了一个具备**多轮对话记忆**、**RAG（检索增强生成）**、**Function Calling（工具调用）** 能力的 AI 智能体助手。
@@ -14,19 +10,20 @@
 
 - 基于 Redis 的文档存储与相似度检索（RAG）
 
-- AI 自动调用工具（查天气、计算器）
+- AI自动调用工具（查天气、计算器）
 
-- 模拟 Embedding 向量生成（用于 RAG 测试）
+- 模拟嵌入向量生成（用于 RAG 测试）
 
 - 前端可视化交互页面
 
 ---
 
+
 ## 二、技术栈
 
 ### 后端
 
-- 核心框架：Spring Boot 4\.0\.6 \+ Spring AI 2\.0\.0\-M6
+- 核心框架：Spring Boot 4.0.6 + Spring AI 2.0.0-M6
 
 - 向量存储：Redis（Jedis 客户端）
 
@@ -36,9 +33,9 @@
 
 ### 前端
 
-- 原生 HTML \+ JavaScript
+- 原生 HTML + JavaScript
 
-- 简单的 CSS 样式与逐字输出动画
+- 简单的CSS样式与逐字输出动画
 
 ---
 
